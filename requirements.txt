@@ -1,0 +1,8 @@
+streamlit>=1.63,<2.0
+openai-whisper
+torch
+torchaudio
+transformers
+sentencepiece
+sacremoses
+piper-tts==1.8.0

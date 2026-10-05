@@ -1,0 +1,421 @@
+/* ============================================================
+   LINGUAFLOW
+   DARK PRODUCT UI
+   ============================================================ */
+
+.stApp {
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            #172554 0%,
+            #0b1120 32%,
+            #070b14 100%
+        );
+
+    color: #f8fafc;
+}
+
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+.block-container {
+    max-width: 1120px;
+
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+}
+
+
+/* ============================================================
+   HIDE STREAMLIT CHROME
+   ============================================================ */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+h1 {
+    color: #f8fafc !important;
+
+    font-size: 2.8rem !important;
+
+    font-weight: 750 !important;
+
+    letter-spacing: -1.5px;
+
+    margin-bottom: 0.2rem !important;
+}
+
+h2,
+h3,
+h4 {
+    color: #f8fafc !important;
+}
+
+p {
+    color: #94a3b8;
+}
+
+[data-testid="stCaptionContainer"] {
+    color: #64748b !important;
+}
+
+
+/* ============================================================
+   LOCAL AI BADGE
+   ============================================================ */
+
+.local-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 8px 13px;
+
+    border: 1px solid #3730a3;
+
+    border-radius: 999px;
+
+    background: rgba(79, 70, 229, 0.12);
+
+    color: #a5b4fc;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+
+    margin-top: 12px;
+}
+
+
+/* ============================================================
+   SELECTBOX
+   ============================================================ */
+
+div[data-baseweb="select"] > div {
+    min-height: 48px !important;
+
+    border-radius: 12px !important;
+
+    border: 1px solid #263449 !important;
+
+    background: #111827 !important;
+
+    color: #f8fafc !important;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+div[data-baseweb="select"] > div:hover {
+    border-color: #6366f1 !important;
+}
+
+div[data-baseweb="select"] span {
+    color: #f8fafc !important;
+}
+
+
+/* Dropdown */
+
+div[data-baseweb="popover"] {
+    background: #111827 !important;
+}
+
+div[data-baseweb="menu"] {
+    background: #111827 !important;
+}
+
+li[role="option"] {
+    background: #111827 !important;
+
+    color: #f8fafc !important;
+}
+
+li[role="option"]:hover {
+    background: #1e293b !important;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.stButton > button {
+    min-height: 48px;
+
+    border-radius: 12px;
+
+    border: 1px solid #263449;
+
+    background: #111827;
+
+    color: #f8fafc !important;
+
+    font-weight: 650;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.stButton > button:hover {
+    border-color: #6366f1;
+
+    background: #172033;
+
+    color: #ffffff !important;
+
+    transform: translateY(-1px);
+}
+
+
+/* Primary */
+
+.stButton > button[kind="primary"] {
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #4f46e5
+        ) !important;
+
+    border-color: #6366f1 !important;
+
+    color: #ffffff !important;
+
+    box-shadow:
+        0 8px 25px rgba(79, 70, 229, 0.25);
+}
+
+.stButton > button[kind="primary"]:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #818cf8,
+            #6366f1
+        ) !important;
+
+    border-color: #818cf8 !important;
+
+    transform: translateY(-2px);
+}
+
+
+/* ============================================================
+   TRANSLATION CARDS
+   ============================================================ */
+
+.translation-card {
+    min-height: 190px;
+
+    padding: 24px;
+
+    border: 1px solid #263449;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17, 24, 39, 0.96),
+            rgba(15, 23, 42, 0.88)
+        );
+
+    color: #f8fafc;
+
+    font-size: 18px;
+
+    line-height: 1.7;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.18);
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.translation-card:hover {
+    border-color: #3f4d68;
+
+    transform: translateY(-1px);
+}
+
+.translation-card.empty {
+    color: #64748b;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.translation-card.translated {
+    border-color: #3730a3;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 27, 75, 0.9),
+            rgba(17, 24, 39, 0.96)
+        );
+}
+
+
+/* ============================================================
+   STATUS BOXES
+   ============================================================ */
+
+div[data-testid="stAlert"] {
+    border-radius: 14px !important;
+
+    background: #111827 !important;
+
+    border: 1px solid #263449 !important;
+}
+
+div[data-testid="stAlert"] p {
+    color: #cbd5e1 !important;
+}
+
+
+/* ============================================================
+   AUDIO INPUT
+   ============================================================ */
+
+div[data-testid="stAudioInput"] {
+    margin-top: 12px;
+
+    margin-bottom: 18px;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+}
+
+div[data-testid="stAudioInput"] > div {
+    border-radius: 16px !important;
+
+    border: 1px solid #263449 !important;
+
+    background: #111827 !important;
+}
+
+
+/* ============================================================
+   AUDIO PLAYER
+   ============================================================ */
+
+audio {
+    width: 100%;
+
+    border-radius: 12px;
+
+    background: #111827;
+}
+
+
+/* ============================================================
+   METRICS
+   ============================================================ */
+
+div[data-testid="stMetric"] {
+    padding: 18px;
+
+    border: 1px solid #263449;
+
+    border-radius: 16px;
+
+    background: #111827;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #94a3b8 !important;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #f8fafc !important;
+}
+
+
+/* ============================================================
+   STATUS / PIPELINE
+   ============================================================ */
+
+div[data-testid="stStatus"] {
+    border-radius: 14px;
+
+    border: 1px solid #263449;
+
+    background: #0f172a;
+}
+
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+
+hr {
+    border-color: #1e293b !important;
+}
+
+
+/* ============================================================
+   SPINNER
+   ============================================================ */
+
+.stSpinner > div {
+    border-top-color: #6366f1 !important;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .block-container {
+        padding-left: 1rem;
+
+        padding-right: 1rem;
+
+        padding-top: 2rem;
+    }
+
+    h1 {
+        font-size: 2.1rem !important;
+    }
+
+    .translation-card {
+        min-height: 160px;
+
+        padding: 18px;
+
+        font-size: 16px;
+    }
+
+    .local-badge {
+        display: none;
+    }
+}
