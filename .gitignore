@@ -1,37 +1,27 @@
-__pycache__/
-*.py[cod]
-
-.DS_Store
-
-.env
-.venv/
-venv/
-
-.streamlit/
-
-audio/*
-!audio/.gitkeep
-
-models/voices/*
-!models/voices/.gitkeep
-
-*.wav
-*.mp3
-
-.pytest_cache/
-.mypy_cache/
 # Python
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
 .venv/
+venv/
 .env
 
 # macOS
 .DS_Store
 
+# Streamlit
+.streamlit/
+
 # Generated audio
-audio/*.wav
+audio/*
+!audio/.gitkeep
+
+*.wav
+*.mp3
 
 # Piper voice models
-models/voices/*.onnx
-models/voices/*.onnx.json
+models/voices/*
+!models/voices/.gitkeep
