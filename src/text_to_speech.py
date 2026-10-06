@@ -2,6 +2,7 @@ from pathlib import Path
 import wave
 
 from piper import PiperVoice
+from piper.download_voices import download_voice
 
 
 class TextToSpeech:
@@ -46,16 +47,28 @@ class TextToSpeech:
             / f"{voice_name}.onnx"
         )
 
+        # Download the Piper voice automatically
+        # if it is not available on the machine.
+        if not model_path.exists():
+
+            print(
+                f"Downloading Piper voice: {voice_name}"
+            )
+
+            download_voice(
+                voice_name,
+                data_dir=str(
+                    self.voice_directory
+                ),
+            )
+
+        # Make sure the download actually produced
+        # the expected model file.
         if not model_path.exists():
 
             raise FileNotFoundError(
-                "\n\n"
-                f"Piper voice model not found:\n"
-                f"{model_path}\n\n"
-                "Download the required voices with:\n"
-                "python -m piper.download_voices "
-                f"--data-dir {self.voice_directory} "
-                f"{voice_name}\n"
+                f"Piper voice model could not be downloaded:\n"
+                f"{model_path}"
             )
 
         print(
