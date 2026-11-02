@@ -1,8 +1,10 @@
-streamlit>=1.63,<2.0
+streamlit>=1.66,<2.0
 openai-whisper
-torch
-torchaudio
-transformers
+torch>=2.6,<3
+torchaudio>=2.6,<3
+transformers>=4.45,<5
 sentencepiece
 sacremoses
 piper-tts==1.8.0
+sacrebleu==2.6.0
+tqdm

@@ -4,6 +4,7 @@ import difflib
 import hashlib
 import html
 import io
+import os
 import re
 import time
 import uuid
@@ -11,7 +12,6 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 from src.speech_to_text import SpeechToText
 from src.translator import Translator
@@ -61,7 +61,7 @@ def compare_speech(expected: str, heard: str):
 def audio_player(path: Path):
     """Audio player with slow-speed buttons (useful for learners)."""
     b64 = base64.b64encode(path.read_bytes()).decode()
-    components.html(
+    st.iframe(
         f"""
         <style>
           body{{margin:0;font-family:Inter,system-ui,sans-serif}}
@@ -188,7 +188,7 @@ if st.session_state.pending_input_text is not None:
 
 @st.cache_resource
 def load_stt():
-    return SpeechToText(model_size="base")
+    return SpeechToText(model_size=os.getenv("WHISPER_MODEL", "base"))
 
 
 @st.cache_resource
@@ -201,8 +201,9 @@ def load_tts():
     return TextToSpeech(voice_directory=str(VOICE_DIR))
 
 
-if "executor" not in st.session_state:
-    st.session_state.executor = ThreadPoolExecutor(max_workers=1)
+@st.cache_resource
+def load_executor():
+    return ThreadPoolExecutor(max_workers=2, thread_name_prefix="linguaflow-tts")
 
 
 # ============================================================
@@ -251,6 +252,12 @@ def use_starter(text):
     start_text_translation()
 
 
+def language_changed():
+    reset_outputs()
+    st.session_state.transcript = ""
+    st.session_state.pipeline_stage = "idle"
+
+
 def clear_all():
     st.session_state.input_text = ""
     st.session_state.transcript = ""
@@ -297,6 +304,8 @@ html_block("""
 
 st.markdown("")
 
+busy = st.session_state.pipeline_stage in BUSY_STAGES
+
 lang_l, swap_col, lang_r = st.columns([5, 1, 5], vertical_alignment="bottom")
 
 with lang_l:
@@ -304,17 +313,21 @@ with lang_l:
         "I speak",
         list(LANGUAGES),
         key="source_language_select",
+        disabled=busy,
+        on_change=language_changed,
         format_func=lambda l: f"{FLAGS[l]} {l}",
     )
 
 with swap_col:
-    st.button("⇄", use_container_width=True, help="Swap languages", on_click=swap_languages)
+    st.button("⇄", use_container_width=True, help="Swap languages", on_click=swap_languages, disabled=busy)
 
 with lang_r:
     target_language = st.selectbox(
         "I'm learning",
         list(LANGUAGES),
         key="target_language_select",
+        disabled=busy,
+        on_change=language_changed,
         format_func=lambda l: f"{FLAGS[l]} {l}",
     )
 
@@ -334,7 +347,7 @@ st.caption(
     "or type below."
 )
 
-audio_input = st.audio_input("Record your voice", label_visibility="collapsed")
+audio_input = st.audio_input("Record your voice", label_visibility="collapsed", disabled=busy)
 
 if audio_input is not None:
     audio_bytes_in = audio_input.getvalue()
@@ -433,10 +446,10 @@ if st.session_state.error_message:
 # ============================================================
 
 if stage == "transcribing":
-    stt = load_stt()
     start_time = time.perf_counter()
 
     try:
+        stt = load_stt()
         transcript, detected_language = stt.transcribe(
             st.session_state.input_path, source_code
         )
@@ -472,14 +485,13 @@ def generate_tts(tts, text, language, output_path):
 
 
 if st.session_state.pipeline_stage == "translating":
-    translator = load_translator()
-
     if source_code == target_code:
         st.session_state.translation = st.session_state.transcript
         st.session_state.translation_time = 0.0
     else:
         start_time = time.perf_counter()
         try:
+            translator = load_translator()
             st.session_state.translation = translator.translate(
                 st.session_state.transcript, source_code, target_code
             )
@@ -491,7 +503,7 @@ if st.session_state.pipeline_stage == "translating":
 
     try:
         tts_engine = load_tts()
-        future = st.session_state.executor.submit(
+        future = load_executor().submit(
             generate_tts,
             tts_engine,
             st.session_state.translation,
@@ -574,12 +586,14 @@ if st.session_state.translation and stage in ("tts", "complete"):
     with st.expander(f"🎯 Practice saying it in {target_language}", expanded=False):
         st.caption(
             "Listen first, then record yourself. "
-            "Words in green matched; words in orange need another try."
+            "Words in green matched; words in orange need another try. "
+            "This checks transcription word overlap, not phonetic pronunciation."
         )
 
         practice_audio = st.audio_input(
             "Repeat the phrase",
             key=f"practice_{st.session_state.practice_n}",
+            disabled=busy,
             label_visibility="collapsed",
         )
 
@@ -590,7 +604,7 @@ if st.session_state.translation and stage in ("tts", "complete"):
             if p_hash != st.session_state.practice_hash:
                 PRACTICE_AUDIO.write_bytes(p_bytes)
                 st.session_state.practice_hash = p_hash
-                with st.spinner("Checking your pronunciation…"):
+                with st.spinner("Checking transcript match…"):
                     try:
                         heard, _ = load_stt().transcribe(
                             str(PRACTICE_AUDIO), target_code
@@ -638,7 +652,7 @@ with st.expander(f"📚 Phrasebook ({len(book)})", expanded=False):
                     f'<div>{safe_text(item["src"])}</div></div>'
                 )
             with c_use:
-                st.button("Reuse", key=f"use_{i}", on_click=load_phrase, args=(i,), use_container_width=True)
+                st.button("Reuse", key=f"use_{i}", on_click=load_phrase, args=(i,), use_container_width=True, disabled=busy)
             with c_del:
                 st.button("✕", key=f"del_{i}", on_click=delete_phrase, args=(i,), use_container_width=True)
 
@@ -672,10 +686,11 @@ if any(
         tr_t = st.session_state.translation_time
         tts_t = st.session_state.tts_time
         m1.metric("Whisper STT", f"{stt_t:.2f}s" if stt_t is not None else "—")
-        m2.metric("MarianMT", f"{tr_t:.2f}s" if tr_t is not None else "—")
+        m2.metric(load_translator().label, f"{tr_t:.2f}s" if tr_t is not None else "—")
         m3.metric(
             "Piper TTS",
             f"{tts_t:.2f}s" if tts_t is not None else ("…" if stage == "tts" else "—"),
         )
 
-st.caption("Whisper Base · MarianMT · Piper — English ↔ French")
+st.caption(f"Whisper {os.getenv('WHISPER_MODEL', 'base')} · {load_translator().label} · Piper — English ↔ French")
+st.caption("Inference runs on the machine hosting this app. Recordings are processed there; hosted use is not on-device inference.")
